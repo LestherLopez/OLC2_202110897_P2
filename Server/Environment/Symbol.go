@@ -9,4 +9,5 @@ type Symbol struct {
 	Mutable  bool
 	Transfer TipoExpresion
 	IsList   bool
+	Posicion int
 }

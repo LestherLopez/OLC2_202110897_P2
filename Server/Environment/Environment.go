@@ -14,11 +14,11 @@ type Environment struct {
 	NameEnv   string
 	Vectors   map[string]SymbolVector
 	Functions map[string]SymbolFunction
-
+	Size     map[string]int
 }
 
 func NewEnvironment(ant interface{}, ide string) Environment {
-	return Environment{
+	env := Environment{
 		Anterior:  ant,
 		Variables: make(map[string]Symbol),
 		Vectors: make(map[string]SymbolVector),
@@ -26,18 +26,19 @@ func NewEnvironment(ant interface{}, ide string) Environment {
 		NameEnv:   ide,
 		Structs:   make(map[string]Symbol),
 	}
+	env.Size["size"] = 0
+	return env
 }
 
-func (env Environment) KeepVariable(id string, value Symbol) {
-
+func (env Environment) KeepVariable(id string, tipo TipoExpresion) Symbol {
 	if variable, ok := env.Variables[id]; ok {
-		fmt.Println("La variable "+id+" ya existe", variable)
-		return
+		fmt.Println("La variable "+id+" ya existe ", variable)
+		return env.Variables[id]
 	}
-	env.Variables[id] = value
-	
+	env.Variables[id] = Symbol{Lin: 0, Col: 0, Tipo: tipo, Posicion: env.Size["size"]}
+	env.Size["size"] = env.Size["size"] + 1
+	return env.Variables[id]
 }
-
 
 
 func (env Environment) GetVariable(id string) Symbol {
@@ -54,7 +55,7 @@ func (env Environment) GetVariable(id string) Symbol {
 		}
 	}
 	fmt.Println("La variable ", id, " no existe en este environment")
-	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false}
+	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false, Posicion: 0}
 }
 
 func (env Environment) SetVariable(id string, value Symbol) Symbol {
@@ -70,11 +71,11 @@ func (env Environment) SetVariable(id string, value Symbol) Symbol {
 					return variable
 				} else {
 					fmt.Println("El tipo es incorrecto")
-					return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false}
+					return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false, Posicion: 0}
 				}
 			} else {
 				fmt.Println("La variable", id, " no es mutable")
-				return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false}
+				return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false, Posicion: 0}
 			}
 		}
 		if tmpEnv.Anterior == nil {
@@ -84,7 +85,7 @@ func (env Environment) SetVariable(id string, value Symbol) Symbol {
 		}
 	}
 	fmt.Println("La variable ", id, " no existe")
-	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false}
+	return Symbol{Lin: 0, Col: 0, Id: "", Tipo: NULL, Valor: 0, Mutable: false, Posicion: 0}
 }
 
 func (env Environment) KeepVector(id string, value SymbolVector) {

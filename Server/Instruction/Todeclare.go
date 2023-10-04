@@ -4,6 +4,7 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"strconv"
 )
 
 type Todeclare struct {
@@ -20,60 +21,36 @@ func NewTodeclare(lin int, col int, id_var string, type_var environment.TipoExpr
 }
 
 func (p Todeclare) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	//se definen las no constantes
-	/*
-	if(!p.constant){
-		
-		if(p.type_var != environment.NULL && p.valor != nil){
-				valueTodeclare := p.valor.(interfaces.Expression).Ejecutar(ast, env)
-				if(valueTodeclare.Tipo==p.type_var){
-						valueTodeclare.Mutable = true
-						env.(environment.Environment).KeepVariable(p.id_var, valueTodeclare)
-						//fmt.Println(valueTodeclare.Mutable)
-						
-				} else{
-					
-				}
-		//variable con valor pero sin tipo
-		}else if(p.type_var==environment.NULL && p.valor != nil){
-				valueTodeclare := p.valor.(interfaces.Expression).Ejecutar(ast, env)
-				valueTodeclare.Mutable = true
-				
-				env.(environment.Environment).KeepVariable(p.id_var, valueTodeclare)
-				
-		//variable con tipo pero sin valor
-		}else if(p.type_var!=environment.NULL && p.valor == nil){
-			//asignar nil por defecto si no tiene valor
-			val := primitive.NewPrimitive(p.Lin, p.Col, nil, environment.NULL) 
-			//ejecutar el valor, colocarlo mutable y guardarlo
-			valueTodeclare := val.Ejecutar(ast, env)
-			valueTodeclare.Mutable = true
-			env.(environment.Environment).KeepVariable(p.id_var, valueTodeclare)
+	var result environment.Value
+	var newVar environment.Symbol
+	result = p.valor.Ejecutar(ast, env, gen)
+	gen.AddComment("Agregando una declaracion")
+	newVar = env.(environment.Environment).KeepVariable(p.id_var, p.type_var)
+
+	if result.Type == environment.BOOLEAN {
+		//si no es temp (boolean)
+		newLabel := gen.NewLabel()
+		//add labels
+		for _, lvl := range result.TrueLabel {
+			gen.AddLabel(lvl.(string))
 		}
-	//se definen las constantes
-	}else if(p.constant){
-	//	fmt.Println("Es constante")
-		if(p.type_var != environment.NULL && p.valor != nil){
-				valueTodeclare := p.valor.(interfaces.Expression).Ejecutar(ast, env)
-				if(valueTodeclare.Tipo==p.type_var){
-				
-						env.(environment.Environment).KeepVariable(p.id_var, valueTodeclare)
-						//fmt.Println(valueTodeclare.Mutable)
-						
-				} else{
-				
-				}
-		//variable con valor pero sin tipo
-		}else if(p.type_var==environment.NULL && p.valor != nil){
-				valueTodeclare := p.valor.(interfaces.Expression).Ejecutar(ast, env)
-				
-				env.(environment.Environment).KeepVariable(p.id_var, valueTodeclare)
-				//fmt.Println(valueTodeclare.Mutable)
-			
-		//variable con tipo pero sin valor
+		gen.AddSetStack(strconv.Itoa(newVar.Posicion), "1")
+		gen.AddGoto(newLabel)
+		//add labels
+		for _, lvl := range result.FalseLabel {
+			gen.AddLabel(lvl.(string))
 		}
-	}*/
-	return nil
+		gen.AddSetStack(strconv.Itoa(newVar.Posicion), "0")
+		gen.AddGoto(newLabel)
+		gen.AddLabel(newLabel)
+		gen.AddBr()
+	} else {
+		//si es temp (num,string,etc)
+		gen.AddSetStack(strconv.Itoa(newVar.Posicion), result.Value)
+		gen.AddBr()
+	}
+
+	return result
 	
 
 	//ast.SetPrint(consoleOut + "\n")
