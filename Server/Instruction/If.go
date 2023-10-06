@@ -4,6 +4,7 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"fmt"
 )
 
 type If struct {
@@ -21,7 +22,7 @@ func NewIf(lin int, col int, expc interfaces.Expression, senten []interface{}, s
 func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	//fmt.Println("entre a if")
 
-	var conditional, result environment.Value
+	var  result, conditional environment.Value
 	
 	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env, gen)
 	newLabel := gen.NewLabel()
@@ -29,7 +30,7 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 		gen.AddLabel(inst.(string))
 
 	}
-
+	fmt.Print("salto1")
 	//agregar codigo c3d de if
 	for _, inst := range p.sentence {
 	//	if strings.Contains(fmt.Sprintf("%T", inst), "instructions"){
@@ -51,15 +52,16 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 
 			}
 	
+	//	}
+	}
+	fmt.Print("salto2")
 	gen.AddLabel(newLabel)	
+	fmt.Print("salto3")
 	for _, lvl := range conditional.FalseLabel {
 		gen.AddLabel(lvl.(string))
 	}
 
-
-	//	}
-	}
-
+	fmt.Print("salto4")
 	/*
 	if(conditional.Tipo != environment.BOOLEAN){
 		fmt.Println("El tipo de variable es incorrecto para un If")
@@ -119,5 +121,5 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 	}
 */
 
-	return result
+	return nil
 }
