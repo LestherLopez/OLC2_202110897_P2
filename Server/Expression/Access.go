@@ -40,5 +40,9 @@ func (p Access) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 	} else {
 		result = environment.NewValue(newTemp2, true, retSym.Tipo)
 	}
+
+	result.Type = retSym.Tipo
+	result.Transfer = retSym.Transfer
+	result.IsTemp = retSym.Mutable
 	return result
 }

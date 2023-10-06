@@ -179,8 +179,11 @@ func (g *Generator) GenerateFinalCode() {
 	
 	g.FinalCode = append(g.FinalCode, "# include <stdio.h>"+"\n"+"float stack[10000];"+"\n"+"float heap[10000];"+"\n"+"float P;"+"\n"+"float H;"+"\n"+"float ")
 	//****************** add temporal declaration
-	tmpDec := fmt.Sprintf("%v", g.TempList[0])
+	fmt.Print("a3")
+	tmpDec := fmt.Sprintf("%v", g.GetTemps()[0])
+	fmt.Print("a2")
 	g.TempList =  append(g.TempList[:0], g.TempList[0+1:]... )
+	fmt.Print("a1")
 	for _, s := range g.TempList {
 		tmpDec += ", "
 		tmpDec += fmt.Sprintf("%v", s)

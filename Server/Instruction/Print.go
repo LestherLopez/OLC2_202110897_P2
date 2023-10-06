@@ -24,7 +24,9 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 		valueToPrint := inst.(interfaces.Expression).Ejecutar(ast, env, gen)
 		consoleOut = consoleOut+ fmt.Sprintf("%v", valueToPrint.Value)
 		consoleOut = consoleOut + " "
+
 		if valueToPrint.Type == environment.INTEGER || valueToPrint.Type == environment.FLOAT {
+	
 			gen.AddPrintf("d", "(int)"+fmt.Sprintf("%v", valueToPrint.Value))
 			gen.AddPrintf("c", "10")
 			gen.AddBr()

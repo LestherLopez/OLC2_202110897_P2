@@ -68,12 +68,13 @@ func main() {
 			})
 		}
 		}
+		
 		Generator.GenerateFinalCode()
 		var ConsoleOut = ""
 		if Ast.GetErrors() == "" {
 			for _, item := range Generator.GetFinalCode() {
-				fmt.Print("aaa")
-				fmt.Print(item.(string))
+				
+		
 				ConsoleOut += item.(string)
 			}
 		} else {

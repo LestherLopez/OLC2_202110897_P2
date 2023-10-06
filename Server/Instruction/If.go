@@ -20,9 +20,47 @@ func NewIf(lin int, col int, expc interfaces.Expression, senten []interface{}, s
 
 func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	//fmt.Println("entre a if")
-/*	var conditional environment.Symbol
-	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env)
+
+	var conditional, result environment.Value
 	
+	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env, gen)
+	newLabel := gen.NewLabel()
+	for _, inst := range conditional.TrueLabel {
+		gen.AddLabel(inst.(string))
+
+	}
+
+	//agregar codigo c3d de if
+	for _, inst := range p.sentence {
+	//	if strings.Contains(fmt.Sprintf("%T", inst), "instructions"){
+		
+			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+			if element != nil{
+				result  = element.(environment.Value)
+				if result.Transfer == environment.CONTINUE{
+					gen.AddGoto(gen.ContinueLabel)
+					result.Transfer = environment.NULL
+				}
+				if result.Transfer == environment.BREAK{
+					gen.AddGoto(gen.BreakLabel)
+					result.Transfer = environment.NULL
+				}
+				for _, lvl := range result.OutLabel {
+						gen.AddComment(lvl.(string))
+				}
+
+			}
+	
+	gen.AddLabel(newLabel)	
+	for _, lvl := range conditional.FalseLabel {
+		gen.AddLabel(lvl.(string))
+	}
+
+
+	//	}
+	}
+
+	/*
 	if(conditional.Tipo != environment.BOOLEAN){
 		fmt.Println("El tipo de variable es incorrecto para un If")
 		return nil
@@ -78,6 +116,8 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 			}
 		}
 
-	}*/
-	return nil
+	}
+*/
+
+	return result
 }

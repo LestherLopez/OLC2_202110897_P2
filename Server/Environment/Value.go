@@ -8,6 +8,8 @@ type Value struct {
 	FalseLabel []interface{}
 	OutLabel   []interface{}
 	IntValue   int
+	Transfer   TipoExpresion
+	Mutable    bool
 }
 
 func NewValue(Val string, tmp bool, typ TipoExpresion) Value {

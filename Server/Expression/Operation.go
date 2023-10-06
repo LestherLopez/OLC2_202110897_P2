@@ -36,8 +36,20 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},
 	}
 
-	var op1, op2, result environment.Value
+	if o.Op_der == nil {
+		var op1 environment.Value
+		op1 = o.Op_izq.Ejecutar(ast, env, gen)
+		if o.Operador=="-"{
+			if op1.Type == 0 {
+				
+			} else if op1.Type==1{
 
+			}
+		}
+	}
+
+	var op1, op2, result environment.Value
+	
 	newTemp := gen.NewTemp()
 
 	switch o.Operador {
@@ -136,7 +148,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 			dominante = tabla_dominante[op1.Type][op2.Type]
-			if dominante == environment.INTEGER  {
+			if op1.Type == 0 && op2.Type == 0  {
 				lvl1 := gen.NewLabel()
 				lvl2 := gen.NewLabel()
 				gen.AddIf(op2.Value, "0", "!=", lvl1)
@@ -273,48 +285,33 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	case "&&":
 		{
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
-			for _, labels := range op1.TrueLabel {
-				gen.AddLabel(labels.(string))
+			//add op1 labels
+			for _, lvl := range op1.TrueLabel {
+				gen.AddLabel(lvl.(string))
 			}
+
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			result = environment.NewValue("", false, environment.BOOLEAN)
-			for _, truelabel := range op2.TrueLabel {
-				result.TrueLabel = append(result.TrueLabel, truelabel)
-			}
-
-			for _, label := range op1.FalseLabel {
-				result.FalseLabel = append(result.FalseLabel, label)
-			}
-
-			for _, label := range op2.FalseLabel {
-				result.FalseLabel = append(result.FalseLabel, label)
-			}
-
+			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel...)
+			result.FalseLabel = append(op1.FalseLabel, result.FalseLabel...)
+			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel...)
 			return result
 		}
 	case "||":
 		{
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
-			for _, labels := range op1.FalseLabel {
-				gen.AddLabel(labels.(string))
+
+			for _, lvl := range op1.FalseLabel {
+				gen.AddLabel(lvl.(string))
 			}
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			result = environment.NewValue("", false, environment.BOOLEAN)
 
-			for _, truelabel := range op1.TrueLabel {
-				result.TrueLabel = append(result.TrueLabel, truelabel)
-			}
-
-			for _, label := range op2.TrueLabel {
-				result.TrueLabel = append(result.TrueLabel, label)
-			}
-
-			for _, label := range op2.FalseLabel {
-				result.FalseLabel = append(result.FalseLabel, label)
-			}
-
+			result.TrueLabel = append(op1.TrueLabel, result.TrueLabel...)
+			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel...)
+			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel...)
 			return result
 		}
 	case "!":
@@ -322,16 +319,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			if op1.Type == environment.BOOLEAN {
 				result = environment.NewValue("", false, environment.BOOLEAN)
-				
-				for _, truelabel := range op1.FalseLabel {
-					result.TrueLabel = append(result.TrueLabel, truelabel)
-				}
-	
-				for _, truelabel := range op1.TrueLabel {
-					result.FalseLabel = append(result.FalseLabel, truelabel)
-				}
-	
-				
+				result.TrueLabel = append(op1.FalseLabel, result.TrueLabel)
+				result.FalseLabel = append(op1.TrueLabel, result.FalseLabel)
 				return result
 			}else{
 				fmt.Println("ERROR: La expresion tiene que ser de tipo boolean para usar !")
@@ -341,6 +330,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	}
 
 
-	return result
+	gen.AddBr()
+	return environment.Value{}
 }
 //falta agregar ultimas operaciones y suma de cadenas

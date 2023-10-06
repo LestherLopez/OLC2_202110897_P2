@@ -25,17 +25,19 @@ func NewEnvironment(ant interface{}, ide string) Environment {
 		Functions: make(map[string]SymbolFunction),
 		NameEnv:   ide,
 		Structs:   make(map[string]Symbol),
+		Size:     make(map[string]int),
 	}
 	env.Size["size"] = 0
 	return env
 }
 
-func (env Environment) KeepVariable(id string, tipo TipoExpresion) Symbol {
+func (env Environment) KeepVariable(id string, tipo TipoExpresion, mutable bool, lin int, col int) Symbol {
 	if variable, ok := env.Variables[id]; ok {
 		fmt.Println("La variable "+id+" ya existe ", variable)
 		return env.Variables[id]
 	}
-	env.Variables[id] = Symbol{Lin: 0, Col: 0, Tipo: tipo, Posicion: env.Size["size"]}
+	env.Variables[id] = Symbol{Lin: lin, Col: col, Tipo: tipo, Posicion: env.Size["size"], Mutable: mutable}
+	
 	env.Size["size"] = env.Size["size"] + 1
 	return env.Variables[id]
 }
