@@ -18,37 +18,40 @@ func NewWhile(lin int, col int, exp_conditional interfaces.Expression, sentences
 }
 
 func (p While) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-/*
-	var conditional environment.Symbol
-	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env)
-	whileEnv := environment.NewEnvironment(env, "While environment")
-	//while in go
-	if(conditional.Tipo != environment.BOOLEAN){
-		fmt.Println("El tipo de variable es incorrecto para un while, tiene que ser boolean")
-		ast.SetError("ERROR: El tipo de variable es incorrecto para un while, tiene que ser boolean")
-		return conditional
+	var conditional, result environment.Value
+	LabelReturn := gen.NewLabel()
+	gen.AddLabel(LabelReturn)
+
+	conditional = p.exp_conditional.Ejecutar(ast, env, gen)
+	gen.AddContinue(LabelReturn)
+	gen.AddBreak(conditional.FalseLabel[0].(string))
+	for _, label := range conditional.TrueLabel{
+		gen.AddLabel(label.(string))
 	}
-	for conditional.Valor.(bool) {
-		for _, inst := range p.sentences {
-			element := inst.(interfaces.Instruction).Ejecutar(ast, whileEnv)
-			if(element!= nil){
-				symbolret := element.(environment.Symbol)
-				if(symbolret.Transfer == environment.RETURN){
-					return symbolret
-				}else if(symbolret.Transfer==environment.BREAK){
-				//fmt.Print("VIENE BREAAAK")
-					return nil
-				}else if(symbolret.Transfer==environment.CONTINUE){
-					
-					break
+	for _, inst := range p.sentences {
+		element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+			if element != nil{
+				result  = element.(environment.Value)
+				if result.Transfer == environment.CONTINUE{
+					gen.AddGoto(gen.ContinueLabel)
+					result.Transfer = environment.NULL
 				}
-				
+				if result.Transfer == environment.BREAK{
+					gen.AddGoto(gen.BreakLabel)
+					result.Transfer = environment.NULL
+				}
+				for _, lvl := range result.OutLabel {
+						gen.AddLabel(lvl.(string))
+				}
+
 			}
-			
-		}
-		conditional =p.exp_conditional.(interfaces.Expression).Ejecutar(ast, whileEnv)
-	}*/
-	//print("while")
-	//ast.SetPrint(consoleOut + "\n")
+	}
+
+	gen.AddGoto(LabelReturn)
+
+	for _, label := range conditional.FalseLabel{
+		gen.AddLabel(label.(string))
+	}
+
 	return nil
 }

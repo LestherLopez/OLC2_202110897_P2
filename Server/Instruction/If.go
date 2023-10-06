@@ -4,7 +4,6 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
-	"fmt"
 )
 
 type If struct {
@@ -30,7 +29,7 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 		gen.AddLabel(inst.(string))
 
 	}
-	fmt.Print("salto1")
+
 	//agregar codigo c3d de if
 	for _, inst := range p.sentence {
 	//	if strings.Contains(fmt.Sprintf("%T", inst), "instructions"){
@@ -47,21 +46,39 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 					result.Transfer = environment.NULL
 				}
 				for _, lvl := range result.OutLabel {
-						gen.AddComment(lvl.(string))
+						gen.AddLabel(lvl.(string))
 				}
 
 			}
 	
 	//	}
 	}
-	fmt.Print("salto2")
-	gen.AddLabel(newLabel)	
-	fmt.Print("salto3")
+
+	gen.AddGoto(newLabel)	
+
 	for _, lvl := range conditional.FalseLabel {
 		gen.AddLabel(lvl.(string))
 	}
+	if len(p.sentence_else)>0{
+		for _, inst := range p.sentence_else {
+			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+			if element != nil{
+				result  = element.(environment.Value)
+				if result.Transfer == environment.CONTINUE{
+					gen.AddGoto(gen.ContinueLabel)
+					result.Transfer = environment.NULL
+				}
+				if result.Transfer == environment.BREAK{
+					gen.AddGoto(gen.BreakLabel)
+					result.Transfer = environment.NULL
+				}
+				for _, lvl := range result.OutLabel {
+						gen.AddComment(lvl.(string))
+				}
 
-	fmt.Print("salto4")
+			}
+		}
+	}
 	/*
 	if(conditional.Tipo != environment.BOOLEAN){
 		fmt.Println("El tipo de variable es incorrecto para un If")
