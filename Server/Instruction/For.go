@@ -2,8 +2,10 @@ package instructions
 
 import (
 	environment "Server/Environment"
+	expressions "Server/Expression"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"strconv"
 )
 
 type For struct {
@@ -20,6 +22,58 @@ func NewFor(lin int, col int, id_var string, first_exp interfaces.Expression,  s
 }
 
 func (p For) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
+	//for con rango
+	if p.second_exp!=nil{
+		var expresion2, result environment.Value
+
+		expresion2 = p.second_exp.Ejecutar(ast, env, gen)
+		
+		id:=NewTodeclare(p.Lin, p.Col, p.id_var, environment.INTEGER, p.first_exp, false)
+		id.Ejecutar(ast, env, gen)
+		//acceder a variable
+		access := expressions.NewAccess(p.Lin, p.Col, p.id_var)
+		valor := access.Ejecutar(ast, env, gen)
+		newTemp := valor.Value
+		
+		Labelif := gen.NewLabel()//generacion de La:
+		gen.AddLabel(Labelif)  // agregar label de La
+		LabelCode := gen.NewLabel() //generacion de lb:
+		LabelEnd := gen.NewLabel() // generacion de Lc:
+		gen.AddIf(newTemp, "("+expresion2.Value+"+1)", "<", LabelCode) //if
+		gen.AddGoto(LabelEnd)
+		gen.AddLabel(LabelCode)  //Lb:
+		
+		//id := NewTodeclare(p.Lin, p.Col, p.id_var, environment.INTEGER, p.first_exp, false)
+		for _, inst := range p.sentences {
+			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+			if element != nil{
+				result  = element.(environment.Value)
+				if result.Transfer == environment.CONTINUE{
+					gen.AddGoto(gen.ContinueLabel)
+					result.Transfer = environment.NULL
+				}
+				if result.Transfer == environment.BREAK{
+					gen.AddGoto(gen.BreakLabel)
+					result.Transfer = environment.NULL
+				}
+				for _, lvl := range result.OutLabel {
+						gen.AddLabel(lvl.(string))
+				}
+
+			}
+			
+		}
+		
+		gen.AddExpression(newTemp, newTemp, "1", "+")
+		variable := env.(environment.Environment).GetVariable(p.id_var)
+		gen.AddSetStack(strconv.Itoa(variable.Posicion), "1+stack["+strconv.Itoa(variable.Posicion)+"]")
+		
+		
+		gen.AddGoto(Labelif)
+		gen.AddLabel(LabelEnd)
+	}
+
+
 	/*
 	if(p.second_exp==nil){
 

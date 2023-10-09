@@ -20,7 +20,7 @@ func NewIf(lin int, col int, expc interfaces.Expression, senten []interface{}, s
 
 func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	//fmt.Println("entre a if")
-
+	gen.AddComment("Generacion de if")
 	var  result, conditional environment.Value
 	
 	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env, gen)
@@ -53,13 +53,15 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 	
 	//	}
 	}
-
+	if len(p.sentence_else)>0{
 	gen.AddGoto(newLabel)	
 
+	gen.AddComment("Generacion de else")
+	
 	for _, lvl := range conditional.FalseLabel {
 		gen.AddLabel(lvl.(string))
 	}
-	if len(p.sentence_else)>0{
+	
 		for _, inst := range p.sentence_else {
 			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
 			if element != nil{
@@ -78,7 +80,15 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 
 			}
 		}
+		gen.AddLabel(newLabel)
+		return nil
+	}else{
+		gen.AddLabel(newLabel)
+		return nil
 	}
+	 
+	//hace falta agregar goto del final
+	//result.OutLabel = OutLabels 
 	/*
 	if(conditional.Tipo != environment.BOOLEAN){
 		fmt.Println("El tipo de variable es incorrecto para un If")
