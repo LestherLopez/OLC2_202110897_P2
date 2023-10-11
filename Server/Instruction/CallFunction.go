@@ -19,6 +19,8 @@ func NewCallFunction(lin int, col int, id string, parameter []interface{}, numer
 }
 
 func (p CallFunction) Ejecutar(ast *environment.AST, env interface{} , gen *generator.Generator) interface{} {
+	
+	gen.AddAccessFunc(p.id)
 	//var updatevector bool
 	/*
 	var vector_copiar environment.SymbolVector

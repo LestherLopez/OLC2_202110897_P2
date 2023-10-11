@@ -3,6 +3,8 @@ package instructions
 import (
 	environment "Server/Environment"
 	generator "Server/Generator"
+	interfaces "Server/Interfaces"
+	"fmt"
 )
 
 type ToDeclareFunction struct {
@@ -21,7 +23,41 @@ func NewToDeclareFunction(lin int, col int, id_func string, parametros []interfa
 }
 
 func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-/*
+	gen.MainCode = false
+	
+	var result environment.Value
+	gen.AddHeaderFunc(p.id_func)
+	var FuncEnv environment.Environment
+	FuncEnv = environment.NewEnvironment(env, "Function "+p.id_func+" environment")
+	FuncEnv.Size["size"] = FuncEnv.Size["size"]+1
+	//colocar parametros
+	for _, element := range p.parametros{
+		variable := element.(interfaces.Expression).Ejecutar(ast, env, gen)
+		FuncEnv.KeepVariable(variable.Value, variable.Type, variable.Mutable, p.Lin, p.Col)
+		fmt.Println("se guarda", variable.Value)
+	}
+
+	for _, inst := range p.sentences {
+		element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+			if element != nil{
+				result  = element.(environment.Value)
+				if result.Transfer == environment.CONTINUE{
+					gen.AddGoto(gen.ContinueLabel)
+					result.Transfer = environment.NULL
+				}
+				if result.Transfer == environment.BREAK{
+					gen.AddGoto(gen.BreakLabel)
+					result.Transfer = environment.NULL
+				}
+				for _, lvl := range result.OutLabel {
+						gen.AddLabel(lvl.(string))
+				}
+
+			}
+	}
+	gen.AddFuncEnd()
+	gen.MainCode = true
+	/*
 	switch p.number {
     case 1:
 		//funcion con return y con parametros

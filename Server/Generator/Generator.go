@@ -52,6 +52,8 @@ func (g *Generator) AddContinue(lvl string) {
 	g.ContinueLabel = lvl
 }
 
+
+
 // Generar un nuevo temporal
 func (g *Generator) NewTemp() string {
 	temp := "t" + fmt.Sprintf("%v", g.Temporal)
@@ -76,6 +78,32 @@ func (g *Generator) AddLabel(Label string) {
 		g.FuncCode = append(g.FuncCode, Label+":\n")
 	}
 }
+// add funcion header
+func (g *Generator) AddHeaderFunc(lvl string){
+	if g.MainCode {
+		g.Code = append(g.Code, "void " + lvl + "() {\n")
+	} else {
+		g.FuncCode= append(g.FuncCode, "void " + lvl + "() {\n")
+	}
+}
+func (g *Generator) AddFuncEnd() {
+	if g.MainCode {
+		g.Code = append(g.Code, "\treturn;\n")
+		g.Code = append(g.Code, "}\n\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, "\treturn;\n")
+		g.FuncCode = append(g.FuncCode, "}\n\n")
+	}
+}
+
+func (g *Generator) AddAccessFunc(id string) {
+	if g.MainCode {
+		g.Code = append(g.Code, id+"();\n")
+	} else {
+		g.FuncCode = append(g.FuncCode, id+"();\n")
+	}
+}
+
 
 func (g *Generator) AddIf(left string, right string, operator string, Label string) {
 	if g.MainCode {
@@ -199,7 +227,7 @@ func (g *Generator) GenerateFinalCode() {
 	}
 	//****************** add functions
 	if len(g.FuncCode) > 0 {
-	//	g.FinalCode.Add("/*------FUNCTIONS------*/\n")
+		g.FinalCode = append(g.FinalCode, "/*------FUNCTIONS------*/\n")
 		for _, s := range g.FuncCode {
 			g.FinalCode = append(g.FinalCode, s)
 		}

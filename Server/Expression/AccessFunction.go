@@ -19,6 +19,8 @@ func NewAccessFunction(lin int, col int, id string, parameter []interface{}, num
 }
 
 func (p AccessFunction) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
+	
+	
 	/*
 	funcion := env.(environment.Environment).GetFunction(p.id)
 	FunctionEnv := environment.NewEnvironment(env, "Function "+p.id+" environment")
