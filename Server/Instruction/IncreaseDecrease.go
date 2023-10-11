@@ -4,6 +4,7 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"strconv"
 )
 
 type IncreaseDecrease struct {
@@ -20,8 +21,25 @@ func NewIncreaseDecrease(lin int, col int, id_var string, operator string,valor 
 }
 
 func (p IncreaseDecrease) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	//result := env.(environment.Environment).GetVariable(p.id)
-	//return result
+	var valor environment.Value
+	gen.AddComment("Instruccion de aumento y decremento")
+	valor = p.valor.Ejecutar(ast, env, gen)
+	switch p.operator{
+	case "+=":
+		{
+			getvalue := env.(environment.Environment).GetVariable(p.id_var)
+			if getvalue.Tipo == valor.Type{
+				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), valor.Value+"+stack["+strconv.Itoa(getvalue.Posicion)+"]")
+			}
+		}
+	case "-=":
+		{
+			getvalue := env.(environment.Environment).GetVariable(p.id_var)
+			if getvalue.Tipo == valor.Type{
+				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), "stack["+strconv.Itoa(getvalue.Posicion)+"]-"+valor.Value)
+			}
+		}
+	}
 /*	var valor environment.Symbol
 	valor = p.valor.Ejecutar(ast,env)
 	switch p.operator {
