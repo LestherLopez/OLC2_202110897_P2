@@ -5,6 +5,7 @@ import (
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
 	"fmt"
+	"strconv"
 )
 
 type Operation struct {
@@ -36,21 +37,34 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		{environment.NULL, environment.NULL, environment.NULL, environment.NULL, environment.NULL},
 	}
 
+
+
+
+	var op1, op2, result environment.Value
+	newTemp := gen.NewTemp()
 	if o.Op_der == nil {
-		var op1 environment.Value
+	
 		op1 = o.Op_izq.Ejecutar(ast, env, gen)
 		if o.Operador=="-"{
 			if op1.Type == 0 {
-				
+				gen.AddExpression(newTemp, "", op1.Value, "-")
+				result = environment.NewValue(newTemp, true, environment.INTEGER)
+				//cambiar el valor del nuevo valor por la suma
+				result.IntValue = -op1.IntValue
+				return result
 			} else if op1.Type==1{
-
+				gen.AddExpression(newTemp, "", op1.Value, "-")
+				result = environment.NewValue(newTemp, true, environment.FLOAT)
+				//cambiar el valor del nuevo valor por la suma
+				result.IntValue = -op1.IntValue
+				return result
 			}
 		}
 	}
 
-	var op1, op2, result environment.Value
 	
-	newTemp := gen.NewTemp()
+	
+	
 
 	switch o.Operador {
 	case "+":
@@ -68,6 +82,26 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				//cambiar el valor del nuevo valor por la suma
 				result.IntValue = op1.IntValue + op2.IntValue
 				return result
+			
+			}else if dominante == environment.STRING{
+			
+				gen.GenerateConcatString()
+				envSize := strconv.Itoa(env.(environment.Environment).Size["size"])
+				tmp1 := gen.NewTemp()
+				tmp2 := gen.NewTemp()
+				gen.AddExpression(tmp1, "P", envSize, "+")
+				gen.AddExpression(tmp1, tmp1, "1", "+")
+				gen.AddSetStack("(int)"+tmp1, op1.Value)
+				gen.AddExpression(tmp1, tmp1, "1", "+")
+				gen.AddSetStack("(int)"+tmp1, op2.Value)
+				gen.AddExpression("P", "P", envSize, "+")
+				gen.AddCall("dbrust_concatString")
+				gen.AddGetStack(tmp2, "(int)P")
+				gen.AddExpression("P", "P", envSize, "-")
+				gen.AddBr()
+				result = environment.NewValue(tmp2, true, dominante)
+				return result
+			
 			} else {
 				ast.SetError("ERROR: No es posible sumar")
 			}
@@ -123,7 +157,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddExpression(newTemp, "0", "", "")
 				gen.AddGoto(lvl2)
 				gen.AddLabel(lvl1)
-				gen.AddExpression(newTemp, op1.Value, op2.Value, "/")
+		
+				gen.AddExpression(newTemp, "int("+op1.Value+")", "int(+"+op2.Value+")", "/")
 				gen.AddLabel(lvl2)
 				result = environment.NewValue(newTemp, true, dominante)
 				return result
@@ -164,7 +199,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddExpression(newTemp, "0", "", "")
 				gen.AddGoto(lvl2)
 				gen.AddLabel(lvl1)
-				gen.AddExpression(newTemp, op1.Value, op2.Value, "%")
+				gen.AddExpression(newTemp, "int("+op1.Value+")", "int("+op2.Value+")", "%")
 				gen.AddLabel(lvl2)
 				result = environment.NewValue(newTemp, true, dominante)
 				return result
@@ -173,6 +208,8 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				ast.SetError("ERROR: No es posible realizar la operacion módulo")
 			}
 		}
+
+		
 	case "<":
 		{
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
@@ -308,22 +345,29 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			result = environment.NewValue("", false, environment.BOOLEAN)
-
 			result.TrueLabel = append(op1.TrueLabel, result.TrueLabel...)
 			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel...)
 			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel...)
+			fmt.Println(result)
 			return result
 		}
 	case "!":
 		{
+		
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			if op1.Type == environment.BOOLEAN {
+				
 				result = environment.NewValue("", false, environment.BOOLEAN)
-				result.TrueLabel = append(op1.FalseLabel, result.TrueLabel)
-				result.FalseLabel = append(op1.TrueLabel, result.FalseLabel)
+				for _, lvl := range op1.FalseLabel {
+					result.TrueLabel = append(result.TrueLabel, lvl)
+				}
+				for _, lvl := range op1.TrueLabel {
+					result.FalseLabel = append(result.FalseLabel, lvl)
+				}
+				fmt.Println(result)
 				return result
-			}else{
-				fmt.Println("ERROR: La expresion tiene que ser de tipo boolean para usar !")
+			} else {
+				ast.SetError("ERROR: tipo no compatible !")
 			}
 		}
 
@@ -333,4 +377,4 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	gen.AddBr()
 	return environment.Value{}
 }
-//falta agregar ultimas operaciones y suma de cadenas
+//falta agregar igualrdad y desigualdad de cadenas

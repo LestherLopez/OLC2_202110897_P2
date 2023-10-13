@@ -73,7 +73,7 @@ constantstmt returns [interfaces.Instruction const]
 ;
 
 //(lin, col, exp_conditional, sentence, sentence else)
-   
+    
 blockelifs returns [[]interface{} blkef]
 @init{
 $blkef = []interface{}{}
@@ -100,6 +100,7 @@ ifstmt  returns [interfaces.Instruction ift, []interface{} el, interfaces.Instru
                                                                                         }
 | IF expr  LLAVEIZQ elif=block LLAVEDER ELSE  blockelifs { $ift = instructions.NewIf($IF.line, $IF.pos, $expr.e, $elif.blk, $blockelifs.blkef); }
 ;
+
 //lin int, col int, expc interfaces.Expression, exp interfaces.Expression,senten []interface{}, senten_deafult []interface{}
 switchstmt returns [interfaces.Instruction switch]
 : SWITCH expr LLAVEIZQ DEFAULT DOUBLEPTS block LLAVEDER { $switch = instructions.NewSwitch($SWITCH.line, $SWITCH.pos, $expr.e, nil,  nil, $block.blk);}
@@ -273,13 +274,11 @@ expr returns [interfaces.Expression e]
 | op = SUB  left=expr { $e = expressions.NewOperation($left.start.GetLine(), $left.start.GetColumn(), $left.e,  $op.text, nil)}
 | PARIZQ expr PARDER { $e = $expr.e } 
 | NUMBER                             
-    {
+    {   
+        
         if (strings.Contains($NUMBER.text,".")){
-            num,err := strconv.ParseFloat($NUMBER.text, 64);
-            if err!= nil{
-                fmt.Println(err)
-            }
-            $e = expressions.NewPrimitive($NUMBER.line,$NUMBER.pos,num,environment.FLOAT)
+           
+            $e = expressions.NewPrimitive($NUMBER.line,$NUMBER.pos,$NUMBER.text,environment.FLOAT)
         }else{
             num,err := strconv.Atoi($NUMBER.text)
             if err!= nil{

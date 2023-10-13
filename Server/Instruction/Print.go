@@ -20,21 +20,21 @@ func NewPrint(lin int, col int, val []interface{}) Print {
 
 func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	var consoleOut string
-	fmt.Print("entramos a PRINT")
+	
 	for _, inst := range p.Value {
 		valueToPrint := inst.(interfaces.Expression).Ejecutar(ast, env, gen)
 		consoleOut = consoleOut+ fmt.Sprintf("%v", valueToPrint.Value)
 		consoleOut = consoleOut + " "
-		fmt.Print("ANTES DE IF")
+		
 		if valueToPrint.Type == environment.INTEGER {
 	
 			gen.AddPrintf("d", "(int)"+fmt.Sprintf("%v", valueToPrint.Value))
-			gen.AddPrintf("c", "10")
+			
 			gen.AddBr()
 
 		}else if valueToPrint.Type == environment.FLOAT{
 			gen.AddPrintf("f", "(float)"+fmt.Sprintf("%v", valueToPrint.Value))
-			gen.AddPrintf("c", "10")
+			
 			gen.AddBr()
 
 		}else if valueToPrint.Type == environment.STRING || valueToPrint.Type == environment.CHARACTER {
@@ -51,7 +51,7 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddCall("dbrust_printString")               //Llamada
 			gen.AddGetStack(newTemp2, "(int)P")             //obtencion retorno
 			gen.AddExpression("P", "P", size, "-")          //regreso del entorno
-			gen.AddPrintf("c", "10")                        //salto de linea
+			                        //salto de linea
 			gen.AddBr()
 			
 
@@ -78,12 +78,12 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			gen.AddPrintf("c", "(char)115")
 			gen.AddPrintf("c", "(char)101")
 			gen.AddLabel(newLabel)
-			gen.AddPrintf("c", "10")
+			
 			gen.AddBr()
 
 		}
-		fmt.Print("despues de if")
+	
 	}
-
+	gen.AddPrintf("c", "10")
 	return nil
 }

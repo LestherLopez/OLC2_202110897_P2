@@ -25,6 +25,7 @@ func (p Primitive) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		result = environment.NewValue(fmt.Sprintf("%v", p.Valor), false, p.Tipo)
 		result.IntValue = p.Valor.(int)
 	} else if p.Tipo == environment.FLOAT {
+
 		result = environment.NewValue(fmt.Sprintf("%v", p.Valor), false, p.Tipo)
 	} else if p.Tipo == environment.STRING {
 		//nuevo temporal
