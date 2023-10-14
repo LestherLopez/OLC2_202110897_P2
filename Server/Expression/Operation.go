@@ -330,9 +330,16 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			result = environment.NewValue("", false, environment.BOOLEAN)
-			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel...)
-			result.FalseLabel = append(op1.FalseLabel, result.FalseLabel...)
-			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel...)
+			for _, lvl := range op2.TrueLabel {
+				result.TrueLabel = append(result.TrueLabel, lvl)
+			}
+			for _, lvl := range op1.FalseLabel {
+				result.FalseLabel = append(result.FalseLabel, lvl)
+			}
+			for _, lvl := range op2.FalseLabel {
+				result.FalseLabel = append(result.FalseLabel, lvl)
+			}
+		
 			return result
 		}
 	case "||":
@@ -345,10 +352,15 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 
 			result = environment.NewValue("", false, environment.BOOLEAN)
-			result.TrueLabel = append(op1.TrueLabel, result.TrueLabel...)
-			result.TrueLabel = append(op2.TrueLabel, result.TrueLabel...)
-			result.FalseLabel = append(op2.FalseLabel, result.FalseLabel...)
-			fmt.Println(result)
+			for _, lvl := range op1.TrueLabel {
+				result.TrueLabel = append(result.TrueLabel, lvl)
+			}
+			for _, lvl := range op2.TrueLabel {
+				result.TrueLabel = append(result.TrueLabel, lvl)
+			}
+			for _, lvl := range op2.FalseLabel {
+				result.FalseLabel = append(result.FalseLabel, lvl)
+			}
 			return result
 		}
 	case "!":

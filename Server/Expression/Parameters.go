@@ -79,5 +79,7 @@ func (p Parameters) Ejecutar(ast *environment.AST, env interface{}, gen *generat
 		
 	
 	}*/
-	return environment.Value{}
+	var result environment.Value
+	result = environment.NewValue(p.second_Id, false, p.Type)
+	return result
 	}

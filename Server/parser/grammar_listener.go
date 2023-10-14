@@ -31,12 +31,6 @@ type GrammarListener interface {
 	// EnterIfstmt is called when entering the ifstmt production.
 	EnterIfstmt(c *IfstmtContext)
 
-	// EnterElseifstmt is called when entering the elseifstmt production.
-	EnterElseifstmt(c *ElseifstmtContext)
-
-	// EnterElsestmt is called when entering the elsestmt production.
-	EnterElsestmt(c *ElsestmtContext)
-
 	// EnterSwitchstmt is called when entering the switchstmt production.
 	EnterSwitchstmt(c *SwitchstmtContext)
 
@@ -165,12 +159,6 @@ type GrammarListener interface {
 
 	// ExitIfstmt is called when exiting the ifstmt production.
 	ExitIfstmt(c *IfstmtContext)
-
-	// ExitElseifstmt is called when exiting the elseifstmt production.
-	ExitElseifstmt(c *ElseifstmtContext)
-
-	// ExitElsestmt is called when exiting the elsestmt production.
-	ExitElsestmt(c *ElsestmtContext)
 
 	// ExitSwitchstmt is called when exiting the switchstmt production.
 	ExitSwitchstmt(c *SwitchstmtContext)

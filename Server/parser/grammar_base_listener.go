@@ -68,18 +68,6 @@ func (s *BaseGrammarListener) EnterIfstmt(ctx *IfstmtContext) {}
 // ExitIfstmt is called when production ifstmt is exited.
 func (s *BaseGrammarListener) ExitIfstmt(ctx *IfstmtContext) {}
 
-// EnterElseifstmt is called when production elseifstmt is entered.
-func (s *BaseGrammarListener) EnterElseifstmt(ctx *ElseifstmtContext) {}
-
-// ExitElseifstmt is called when production elseifstmt is exited.
-func (s *BaseGrammarListener) ExitElseifstmt(ctx *ElseifstmtContext) {}
-
-// EnterElsestmt is called when production elsestmt is entered.
-func (s *BaseGrammarListener) EnterElsestmt(ctx *ElsestmtContext) {}
-
-// ExitElsestmt is called when production elsestmt is exited.
-func (s *BaseGrammarListener) ExitElsestmt(ctx *ElsestmtContext) {}
-
 // EnterSwitchstmt is called when production switchstmt is entered.
 func (s *BaseGrammarListener) EnterSwitchstmt(ctx *SwitchstmtContext) {}
 

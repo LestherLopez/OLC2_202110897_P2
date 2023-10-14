@@ -73,7 +73,7 @@ constantstmt returns [interfaces.Instruction const]
 ;
 
 //(lin, col, exp_conditional, sentence, sentence else)
-    
+
 blockelifs returns [[]interface{} blkef]
 @init{
 $blkef = []interface{}{}
@@ -100,6 +100,43 @@ ifstmt  returns [interfaces.Instruction ift, []interface{} el, interfaces.Instru
                                                                                         }
 | IF expr  LLAVEIZQ elif=block LLAVEDER ELSE  blockelifs { $ift = instructions.NewIf($IF.line, $IF.pos, $expr.e, $elif.blk, $blockelifs.blkef); }
 ;
+/* 
+ifstmt returns [interfaces.Instruction ift]
+@init{
+    var elif []interface{}
+    var listElif []IElseifstmtContext
+}
+: IF expr LLAVEIZQ block LLAVEDER e+=elseifstmt* elsestmt
+    {   
+        
+        listElif = localctx.(*IfstmtContext).GetE()
+        for _, e := range listElif {
+            elif = append(elif, e.GetElif())
+            
+        }
+        $ift = instructions.NewIf($IF.line, $IF.pos, $expr.e, $block.blk, elif, $elsestmt.blkelse)
+    }
+
+;
+elseifstmt returns [interfaces.Instruction elif]
+@init{
+    var elif, condelse []interface{}
+}
+: ELSE IF expr LLAVEIZQ block LLAVEDER {
+    $elif = instructions.NewIf($ELSE.line, $ELSE.pos, $expr.e, $block.blk, elif, condelse); 
+}
+;
+
+elsestmt returns [[]interface{} blkelse]
+@init{
+    var arr []interface{}
+}
+: ELSE LLAVEIZQ block LLAVEDER {$blkelse = $block.blk}
+| {
+    
+    $blkelse = arr}
+;*/
+
 
 //lin int, col int, expc interfaces.Expression, exp interfaces.Expression,senten []interface{}, senten_deafult []interface{}
 switchstmt returns [interfaces.Instruction switch]
