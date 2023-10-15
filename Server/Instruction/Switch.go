@@ -22,13 +22,19 @@ func NewSwitch(lin int, col int, expc interfaces.Expression, exp interfaces.Expr
 func (p Switch) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 		var conditional environment.Value
 		conditional = p.exp_conditional.Ejecutar(ast, env, gen)
-		gen.AddIf(conditional.Value, "0", "==", "Lb")
+		env.(environment.Environment).KeepVariableSwitch("switch", environment.Symbol{Lin: p.Lin, Col: p.Col, Tipo: conditional.Type, Transfer: conditional.Transfer, Valor: conditional.Value})
+		if(p.sentence!=nil){
+			
+			p.sentence.(interfaces.Instruction).Ejecutar(ast, env, gen)
 
-	/*
+		}
+	/*	gen.AddIf(conditional.Value, "0", "==", "Lb")
+
+	
 		var conditional environment.Symbol
 		conditional  = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env)
 		
-		env.(environment.Environment).KeepVariableSwitch("switch", conditional)
+		env.(environment.Environment).KeepVariableSwitch()
 		conditional1 := env.(environment.Environment).GetVariableSwitch("switch")
 		fmt.Println(conditional1.Valor)
 	//	fmt.Println("entro al guardado de expresion")
@@ -58,13 +64,13 @@ func (p Switch) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 				if(element!= nil){
 					symbolret := element.(environment.Symbol)
 					if(symbolret.Transfer == environment.RETURN){
-						fmt.Println("a")
+					
 						return symbolret
 					}else if(symbolret.Transfer==environment.BREAK){
-						fmt.Println("b")
+					
 						return nil
 					}else if(symbolret.Transfer==environment.CONTINUE){
-						fmt.Println("c")
+			
 						break
 					}
 					
@@ -72,6 +78,5 @@ func (p Switch) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 			}
 		}
 		*/
-
 	return nil
 }

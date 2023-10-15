@@ -74,6 +74,16 @@ public interface GrammarListener extends ParseTreeListener {
 	 */
 	void exitConstantstmt(GrammarParser.ConstantstmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link GrammarParser#blockelifs}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlockelifs(GrammarParser.BlockelifsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GrammarParser#blockelifs}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlockelifs(GrammarParser.BlockelifsContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link GrammarParser#ifstmt}.
 	 * @param ctx the parse tree
 	 */
@@ -83,26 +93,6 @@ public interface GrammarListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIfstmt(GrammarParser.IfstmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GrammarParser#elseifstmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterElseifstmt(GrammarParser.ElseifstmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GrammarParser#elseifstmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitElseifstmt(GrammarParser.ElseifstmtContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link GrammarParser#elsestmt}.
-	 * @param ctx the parse tree
-	 */
-	void enterElsestmt(GrammarParser.ElsestmtContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link GrammarParser#elsestmt}.
-	 * @param ctx the parse tree
-	 */
-	void exitElsestmt(GrammarParser.ElsestmtContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GrammarParser#switchstmt}.
 	 * @param ctx the parse tree

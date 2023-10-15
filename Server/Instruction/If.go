@@ -23,11 +23,11 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 	var  result, conditional environment.Value
 	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env, gen)
 	newLabel := gen.NewLabel()
-	gen.AddComment("AGREGAR PRIMER LABEL")
+	gen.AddComment("INSTRUCCION IF")
 	for _, inst := range conditional.TrueLabel {
 		gen.AddLabel(inst.(string))
 	}
-	gen.AddComment("INICIA INS IF")
+	
 	//agregar codigo c3d de if
 	for _, inst := range p.sentence {
 
@@ -49,19 +49,19 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 		
 
 	}
-	gen.AddComment("TERMINA INS IF Y SE AGREGA GOTO")
+
 	gen.AddGoto(newLabel)
-	gen.AddComment("SE TERMINA GOTO Y SE AGREGA OTRO LABEL")
+	
 	for _, inst := range conditional.FalseLabel {
 
 		
 		gen.AddLabel(inst.(string))
 
 	}
-	gen.AddComment("SE TERMINA LABEL")
+
 		if len(p.sentence_else)>0{
 
-		gen.AddComment("INICIA ELSE")
+
 		for _, inst := range p.sentence_else {
 			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
 			if element != nil{
@@ -79,7 +79,7 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 				}
 			}
 		}
-		gen.AddComment("TERMINA ELSE")
+		
 		
 	}
 	gen.AddLabel(newLabel)

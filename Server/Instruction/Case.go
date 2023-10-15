@@ -4,6 +4,7 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"fmt"
 )
 
 type Case struct {
@@ -20,6 +21,33 @@ func NewCase(lin int, col int,  exp interfaces.Expression,senten []interface{}, 
 }
 
 func (p Case) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
+		
+		var conditional environment.Symbol
+		var expr environment.Value
+		gen.AddComment("CASE")
+		conditional = env.(environment.Environment).GetVariableSwitch("switch")
+		expr = p.exp.Ejecutar(ast, env, gen)
+		gen.AddComment("-------------"+fmt.Sprintf("%v", conditional.Tipo))
+		newlabel := gen.NewLabel()
+		secondLabel := gen.NewLabel()
+		gen.AddIf(conditional.Valor.(string), expr.Value, "==", newlabel)
+		gen.AddGoto(secondLabel)
+		gen.AddLabel(newlabel)
+
+		for _, inst := range expr.FalseLabel {
+			gen.AddLabel(inst.(string))
+		}
+		gen.AddComment("INSTRUCCIONES SENTENCE")
+		for _, inst := range p.sentence {
+			inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+		}
+		
+		gen.AddComment("INSTRUCCIONES DEFAULT")
+		gen.AddLabel(secondLabel)
+		for _, inst := range p.sentence_deafult {
+			inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
+		}
+		
 	/*
 		var value environment.Symbol
 		value  = p.exp.(interfaces.Expression).Ejecutar(ast, env)
