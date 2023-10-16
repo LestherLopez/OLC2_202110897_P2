@@ -17,8 +17,9 @@ func NewBreak(lin int, col int) Break {
 }
 
 func (p Break) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	
-		//return sin expresion
-	return environment.Symbol{Lin: p.Lin, Col: p.Col, Id: "",Tipo: environment.NULL, Valor: nil, Mutable: true, Transfer: environment.BREAK}
-	
+	var res environment.Value
+	res = environment.NewValue("", false, environment.NULL)
+	res.Transfer = environment.BREAK
+	//return sin expresion
+	return res
 }

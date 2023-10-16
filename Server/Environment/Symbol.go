@@ -10,4 +10,5 @@ type Symbol struct {
 	Transfer TipoExpresion
 	IsList   bool
 	Posicion int
+	Label    string
 }

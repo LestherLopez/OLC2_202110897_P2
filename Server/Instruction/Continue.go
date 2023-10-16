@@ -18,7 +18,10 @@ func NewContinue(lin int, col int) Continue {
 
 func (p Continue) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	
-		//return sin expresion
-	return environment.Symbol{Lin: p.Lin, Col: p.Col, Id: "",Tipo: environment.NULL, Valor: nil, Mutable: true, Transfer: environment.CONTINUE}
+	var res environment.Value
+	res = environment.NewValue("", false, environment.NULL)
+	res.Transfer = environment.CONTINUE
+	//return sin expresion
+	return res
 	
 }

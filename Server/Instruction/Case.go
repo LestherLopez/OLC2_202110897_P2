@@ -34,19 +34,18 @@ func (p Case) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gen
 		gen.AddGoto(secondLabel)
 		gen.AddLabel(newlabel)
 
-		for _, inst := range expr.FalseLabel {
-			gen.AddLabel(inst.(string))
-		}
+	
 		gen.AddComment("INSTRUCCIONES SENTENCE")
 		for _, inst := range p.sentence {
 			inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
 		}
-		
+		gen.AddGoto(conditional.Label)
 		gen.AddComment("INSTRUCCIONES DEFAULT")
 		gen.AddLabel(secondLabel)
 		for _, inst := range p.sentence_deafult {
 			inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
 		}
+	
 		
 	/*
 		var value environment.Symbol

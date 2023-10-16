@@ -22,12 +22,16 @@ func NewSwitch(lin int, col int, expc interfaces.Expression, exp interfaces.Expr
 func (p Switch) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 		var conditional environment.Value
 		conditional = p.exp_conditional.Ejecutar(ast, env, gen)
-		env.(environment.Environment).KeepVariableSwitch("switch", environment.Symbol{Lin: p.Lin, Col: p.Col, Tipo: conditional.Type, Transfer: conditional.Transfer, Valor: conditional.Value})
+		lvl := gen.NewLabel()
+		env.(environment.Environment).KeepVariableSwitch("switch", environment.Symbol{Lin: p.Lin, Col: p.Col, Tipo: conditional.Type, Transfer: conditional.Transfer, Valor: conditional.Value, Label: lvl})
+		
 		if(p.sentence!=nil){
 			
 			p.sentence.(interfaces.Instruction).Ejecutar(ast, env, gen)
 
 		}
+		
+		gen.AddLabel(lvl)
 	/*	gen.AddIf(conditional.Value, "0", "==", "Lb")
 
 	

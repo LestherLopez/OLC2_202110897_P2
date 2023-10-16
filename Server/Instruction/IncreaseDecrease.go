@@ -29,14 +29,23 @@ func (p IncreaseDecrease) Ejecutar(ast *environment.AST, env interface{}, gen *g
 		{
 			getvalue := env.(environment.Environment).GetVariable(p.id_var)
 			if getvalue.Tipo == valor.Type{
-				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), valor.Value+"+stack["+strconv.Itoa(getvalue.Posicion)+"]")
+				//obtener valor
+				stacklvl := gen.NewTemp()
+				gen.AddGetStack(stacklvl, strconv.Itoa(getvalue.Posicion))
+				newstacklvl := gen.NewTemp()
+				gen.AddExpression(newstacklvl, stacklvl, valor.Value, "+")
+				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), newstacklvl)
 			}
 		}
 	case "-=":
 		{
 			getvalue := env.(environment.Environment).GetVariable(p.id_var)
 			if getvalue.Tipo == valor.Type{
-				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), "stack["+strconv.Itoa(getvalue.Posicion)+"]-"+valor.Value)
+				stacklvl := gen.NewTemp()
+				gen.AddGetStack(stacklvl, strconv.Itoa(getvalue.Posicion))
+				newstacklvl := gen.NewTemp()
+				gen.AddExpression(newstacklvl, stacklvl, valor.Value, "-")
+				gen.AddSetStack(strconv.Itoa(getvalue.Posicion), newstacklvl)
 			}
 		}
 	}

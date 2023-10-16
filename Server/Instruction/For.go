@@ -66,7 +66,11 @@ func (p For) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gene
 		
 		gen.AddExpression(newTemp, newTemp, "1", "+")
 		variable := env.(environment.Environment).GetVariable(p.id_var)
-		gen.AddSetStack(strconv.Itoa(variable.Posicion), "1+stack["+strconv.Itoa(variable.Posicion)+"]")
+		stacklvl := gen.NewTemp()
+		gen.AddGetStack(stacklvl, strconv.Itoa(variable.Posicion))
+		newstacklvl := gen.NewTemp()
+		gen.AddExpression(newstacklvl, stacklvl, valor.Value, "+")
+		gen.AddSetStack(strconv.Itoa(variable.Posicion), newstacklvl)
 		
 		
 		gen.AddGoto(Labelif)
