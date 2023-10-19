@@ -158,7 +158,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddGoto(lvl2)
 				gen.AddLabel(lvl1)
 		
-				gen.AddExpression(newTemp, "int("+op1.Value+")", "int(+"+op2.Value+")", "/")
+				gen.AddExpression(newTemp, "int("+op1.Value+")", "int("+op2.Value+")", "/")
 				gen.AddLabel(lvl2)
 				result = environment.NewValue(newTemp, true, dominante)
 				return result

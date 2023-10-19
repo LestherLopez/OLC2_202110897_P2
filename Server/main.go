@@ -7,6 +7,7 @@ import (
 	"Server/parser"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/antlr4-go/antlr/v4"
 	"github.com/gofiber/fiber/v2"
@@ -57,16 +58,22 @@ func main() {
 
 		var Generator generator.Generator
 		Generator = generator.NewGenerator()
-		
+		Generator.MainCode = true
 		
 		//ejecución
 		for _, inst := range Code {
-			err := inst.(interfaces.Instruction).Ejecutar(&Ast, env, &Generator)
-			if err != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"error": "Error executing code",
-			})
+			if strings.Contains(fmt.Sprintf("%T", inst), "instructions") {
+				err := inst.(interfaces.Instruction).Ejecutar(&Ast, env, &Generator)
+				if err != nil {
+					for _, lvl := range inst.(environment.Value).OutLabel {
+						Generator.AddComment("Outlvl agregado")
+						Generator.AddLabel(lvl.(string))
+					}
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"error": "Error executing code",
+				})
 		}
+	}
 		}
 		
 		Generator.GenerateFinalCode()

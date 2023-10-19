@@ -18,16 +18,16 @@ func NewReturnIn(lin int, col int, exp interfaces.Expression) ReturnIn {
 }
 
 func (p ReturnIn) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	/*
-	if(p.exp!=nil){
-		result := p.exp.(interfaces.Expression).Ejecutar(ast, env)
 	
-		//return con exoresion
-		return environment.Symbol{Lin: p.Lin, Col: p.Col, Tipo: result.Tipo, Valor: result.Valor, Id: "", Mutable: true,Transfer: environment.RETURN}
+	if(p.exp!=nil){
+		result := p.exp.(interfaces.Expression).Ejecutar(ast, env, gen)
+		result.Transfer = environment.RETURN
+		//return con exoresion	
+		return result
 	}else{
 	
 		//return sin expresion
-		return environment.Symbol{Lin: p.Lin, Col: p.Col, Id: "",Tipo: environment.NULL, Valor: nil, Mutable: true, Transfer: environment.RETURN}
-	}*/
+		return environment.Value{ Mutable: true, Transfer: environment.RETURN}
+	}
 	return nil
 }

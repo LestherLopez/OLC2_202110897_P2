@@ -5,6 +5,7 @@ import (
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
 	"fmt"
+	"strings"
 )
 
 type ToDeclareFunction struct {
@@ -23,40 +24,45 @@ func NewToDeclareFunction(lin int, col int, id_func string, parametros []interfa
 }
 
 func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
-	gen.MainCode = false
-	
+
 	var result environment.Value
+	gen.MainCode = false
+	gen.AddComment("******** Funcion " + p.id_func)
 	gen.AddHeaderFunc(p.id_func)
-	var FuncEnv environment.Environment
-	FuncEnv = environment.NewEnvironment(env, "Function "+p.id_func+" environment")
-	FuncEnv.Size["size"] = FuncEnv.Size["size"]+1
-	//colocar parametros
-	for _, element := range p.parametros{
-		variable := element.(interfaces.Expression).Ejecutar(ast, env, gen)
-		FuncEnv.KeepVariable(variable.Value, variable.Type, variable.Mutable, p.Lin, p.Col)
-		fmt.Println("se guarda", variable.Value)
+	//entorno
+	var envFunc environment.Environment
+	envFunc = environment.NewEnvironment(env.(environment.Environment), p.id_func)
+	envFunc.Size["size"] = envFunc.Size["size"] + 1
+	//variables
+	for _, s := range p.parametros {
+		res := s.(interfaces.Expression).Ejecutar(ast, env, gen)
+		envFunc.KeepVariable(res.Value, res.Type, res.Mutable, p.Lin, p.Col)
 	}
-
-	for _, inst := range p.sentences {
-		element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
-			if element != nil{
-				result  = element.(environment.Value)
-				if result.Transfer == environment.CONTINUE{
-					gen.AddGoto(gen.ContinueLabel)
-					result.Transfer = environment.NULL
+	//instrucciones func
+	for _, s := range p.sentences {
+		if strings.Contains(fmt.Sprintf("%T", s), "instructions") {
+			resInst := s.(interfaces.Instruction).Ejecutar(ast, envFunc, gen)
+			if resInst != nil {
+				//agregando etiquetas de salida
+				for _, lvl := range resInst.(environment.Value).OutLabel {
+					gen.AddLabel(lvl.(string))
 				}
-				if result.Transfer == environment.BREAK{
-					gen.AddGoto(gen.BreakLabel)
-					result.Transfer = environment.NULL
-				}
-				for _, lvl := range result.OutLabel {
-						gen.AddLabel(lvl.(string))
-				}
-
 			}
+		} else if strings.Contains(fmt.Sprintf("%T", s), "expressions") {
+			result = s.(interfaces.Expression).Ejecutar(ast, envFunc, gen)
+			//agregando etiquetas de salida
+			for _, lvl := range result.OutLabel {
+				gen.AddLabel(lvl.(string))
+			}
+		} else {
+			fmt.Println("Error en bloque")
+		}
 	}
 	gen.AddFuncEnd()
 	gen.MainCode = true
+
+
+	
 	/*
 	switch p.number {
     case 1:
