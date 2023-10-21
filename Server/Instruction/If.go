@@ -4,8 +4,6 @@ import (
 	environment "Server/Environment"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
-	"fmt"
-	"strings"
 )
 
 type If struct {
@@ -33,7 +31,6 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 	//agregar codigo c3d de if
 	for _, inst := range p.sentence {
 
-		if strings.Contains(fmt.Sprintf("%T", inst), "instructions") {
 			element := inst.(interfaces.Instruction).Ejecutar(ast, env, gen)
 			if element != nil{
 				result  = element.(environment.Value)
@@ -49,7 +46,7 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 
 			}
 		
-		}
+		
 	}
 
 	gen.AddGoto(newLabel)

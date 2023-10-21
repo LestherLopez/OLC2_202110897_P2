@@ -73,8 +73,10 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 			//validar tipo dominante
 			dominante = tabla_dominante[op1.Type][op2.Type]
+			gen.AddComment("Operacion suma")
 			//valida el tipo
 			if dominante == environment.INTEGER || dominante == environment.FLOAT {
+
 				// agregar expresion a generador
 				gen.AddExpression(newTemp, op1.Value, op2.Value, "+")
 				//crear nuevo valor en el environment
@@ -108,6 +110,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		}
 	case "-":
 		{
+			gen.AddComment("Operacion resta")
 			op1 = o.Op_izq.Ejecutar(ast, env, gen)
 			op2 = o.Op_der.Ejecutar(ast, env, gen)
 			dominante = tabla_dominante[op1.Type][op2.Type]

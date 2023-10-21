@@ -22,11 +22,17 @@ func (p ReturnIn) Ejecutar(ast *environment.AST, env interface{}, gen *generator
 	if(p.exp!=nil){
 		result := p.exp.(interfaces.Expression).Ejecutar(ast, env, gen)
 		result.Transfer = environment.RETURN
+		gen.AddComment("INSTRUCCION RETURN")
+		gen.AddSetStack("(int)P", result.Value)
+		label := gen.NewLabel()
+		gen.AddGoto(label)
+		gen.AddLabel(label)
 		//return con exoresion	
 		return result
 	}else{
 	
 		//return sin expresion
+		
 		return environment.Value{ Mutable: true, Transfer: environment.RETURN}
 	}
 	return nil

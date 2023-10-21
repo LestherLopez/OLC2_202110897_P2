@@ -26,6 +26,11 @@ func NewToDeclareFunction(lin int, col int, id_func string, parametros []interfa
 func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 
 	var result environment.Value
+	var symbolFunc environment.SymbolFunction
+	symbolFunc.Col = p.Col
+	symbolFunc.Lin =p.Lin
+	symbolFunc.Id = p.id_func
+	env.(environment.Environment).KeepFunction(p.id_func, symbolFunc)
 	gen.MainCode = false
 	gen.AddComment("******** Funcion " + p.id_func)
 	gen.AddHeaderFunc(p.id_func)
@@ -44,6 +49,12 @@ func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *
 			resInst := s.(interfaces.Instruction).Ejecutar(ast, envFunc, gen)
 			if resInst != nil {
 				//agregando etiquetas de salida
+				if resInst.(environment.Value).Transfer == environment.RETURN{
+			
+					symbolFunc.Isreturn = true
+					symbolFunc.TipoReturn = p.type_var
+					env.(environment.Environment).KeepFunction(p.id_func, symbolFunc)
+				}
 				for _, lvl := range resInst.(environment.Value).OutLabel {
 					gen.AddLabel(lvl.(string))
 				}
@@ -60,7 +71,7 @@ func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *
 	}
 	gen.AddFuncEnd()
 	gen.MainCode = true
-
+	
 
 	
 	/*

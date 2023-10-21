@@ -25,13 +25,17 @@ func NewAccessFunction(lin int, col int, id string, parameter []interface{}, num
 func (p AccessFunction) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
 	
 	var result environment.Value
+	var symbolFunc environment.SymbolFunction
+	symbolFunc = env.(environment.Environment).GetFunction(p.id)
+	
 	size := env.(environment.Environment).Size["size"]
-	gen.AddComment("Inicio de llamada")
+	gen.AddComment("Inicio llamada de funcion")
+	
 	if len(p.parameter) > 0 {
 		tmp1 := gen.NewTemp()
 		gen.AddExpression(tmp1, "P", strconv.Itoa(size+1), "+")
 		for i := 0; i < len(p.parameter); i++ {
-
+			
 			//ejecutando parametros
 			if strings.Contains(fmt.Sprintf("%T", p.parameter[i]), "expressions") {
 				result = p.parameter[i].(interfaces.Expression).Ejecutar(ast, env, gen)
@@ -49,17 +53,17 @@ func (p AccessFunction) Ejecutar(ast *environment.AST, env interface{}, gen *gen
 		gen.AddCall(p.id)
 		gen.AddGetStack(tmp1, "(int)P")
 		gen.AddExpression("P", "P", strconv.Itoa(size), "-")
-
+		result = environment.Value{IsTemp: true, Value: tmp1, Type: symbolFunc.TipoReturn}
 	} else {
 		tmp1 := gen.NewTemp()
-
+		
 		gen.AddExpression("P", "P", strconv.Itoa(size), "+")
 		gen.AddCall(p.id)
 		gen.AddGetStack(tmp1, "(int)P")
 		gen.AddExpression("P", "P", strconv.Itoa(size), "-")
-
+		result = environment.Value{IsTemp: true, Value: tmp1, Type: symbolFunc.TipoReturn}
 	}
-	gen.AddComment("Final de llamada")
+	gen.AddComment("Final de llamada funcion")
 	return result
 }
 
