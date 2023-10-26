@@ -39,14 +39,19 @@ func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *
 	envFunc = environment.NewEnvironment(env.(environment.Environment), p.id_func)
 	envFunc.Size["size"] = envFunc.Size["size"] + 1
 	//variables
+	gen.AddComment("Ejecucion parametros de funcion")
 	for _, s := range p.parametros {
 		res := s.(interfaces.Expression).Ejecutar(ast, env, gen)
 		envFunc.KeepVariable(res.Value, res.Type, res.Mutable, p.Lin, p.Col)
 	}
+	gen.AddComment("Fin ejecucion parametros de funcion")
 	//instrucciones func
+	gen.AddComment("Ejecucion sentencias de funcion")
 	for _, s := range p.sentences {
 		if strings.Contains(fmt.Sprintf("%T", s), "instructions") {
+			gen.AddComment("Instruccion en sentencias de funcion")
 			resInst := s.(interfaces.Instruction).Ejecutar(ast, envFunc, gen)
+			
 			if resInst != nil {
 				//agregando etiquetas de salida
 				if resInst.(environment.Value).Transfer == environment.RETURN{
@@ -60,7 +65,9 @@ func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *
 				}
 			}
 		} else if strings.Contains(fmt.Sprintf("%T", s), "expressions") {
+			gen.AddComment("Expresion en sentencias de funcion")
 			result = s.(interfaces.Expression).Ejecutar(ast, envFunc, gen)
+			
 			//agregando etiquetas de salida
 			for _, lvl := range result.OutLabel {
 				gen.AddLabel(lvl.(string))
@@ -69,6 +76,7 @@ func (p ToDeclareFunction) Ejecutar(ast *environment.AST, env interface{}, gen *
 			fmt.Println("Error en bloque")
 		}
 	}
+	gen.AddComment("Fin ejecucion sentencias de funcion")
 	gen.AddFuncEnd()
 	gen.MainCode = true
 	

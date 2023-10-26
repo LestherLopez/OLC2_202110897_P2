@@ -17,6 +17,7 @@ type Generator struct {
 	MainCode      bool
 	PrintStringFlag bool
 	ConcatStringFlag bool
+	SaveTmp 		string
 }
 
 func NewGenerator() Generator {
@@ -28,6 +29,7 @@ func NewGenerator() Generator {
 		PrintStringFlag: true,
 		MainCode:      true,
 		ConcatStringFlag: true,
+		SaveTmp:  "",
 	}
 	return generator
 }

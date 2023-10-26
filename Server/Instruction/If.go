@@ -21,6 +21,7 @@ func NewIf(lin int, col int, expc interfaces.Expression, senten []interface{},  
 
 func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
 	var  result, conditional environment.Value
+	var OutLvls []interface{}
 	conditional = p.exp_conditional.(interfaces.Expression).Ejecutar(ast, env, gen)
 	newLabel := gen.NewLabel()
 	gen.AddComment("INSTRUCCION IF")
@@ -48,16 +49,18 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 		
 		
 	}
+	if len(p.sentence_else)!=0{
 
-	gen.AddGoto(newLabel)
 	
+	gen.AddGoto(newLabel)
+	}
 	for _, inst := range conditional.FalseLabel {
 
 		
 		gen.AddLabel(inst.(string))
 
 	}
-
+	OutLvls = append(OutLvls, newLabel)
 		if len(p.sentence_else)>0{
 
 
@@ -79,9 +82,13 @@ func (p If) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Gener
 			}
 		}
 		
-		
+		gen.AddLabel(newLabel)
 	}
-	gen.AddLabel(newLabel)
+	copiedSlice := make([]interface{}, len(OutLvls))
+	for i, item := range OutLvls {
+		copiedSlice[i] = item
+	}
+
 	gen.AddComment("FINAL DE INSTRUCCION IF")
 	return nil
 /*	var  result, conditional environment.Value	

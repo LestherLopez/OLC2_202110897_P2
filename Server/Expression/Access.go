@@ -17,7 +17,7 @@ func NewAccess(lin int, col int, id string) Access {
 }
 
 func (p Access) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
-	gen.AddComment("Llamando una variable")
+	gen.AddComment("Llamando una variable "+p.id)
 	var result environment.Value
 	retSym := env.(environment.Environment).GetVariable(p.id)
 	newTemp := gen.NewTemp()
@@ -45,5 +45,6 @@ func (p Access) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 	result.Type = retSym.Tipo
 	result.Transfer = retSym.Transfer
 	result.IsTemp = retSym.Mutable
+	gen.AddComment("Final llamando a variable")
 	return result
 }

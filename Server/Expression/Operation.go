@@ -83,8 +83,9 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				result = environment.NewValue(newTemp, true, dominante)
 				//cambiar el valor del nuevo valor por la suma
 				result.IntValue = op1.IntValue + op2.IntValue
+				gen.AddComment("Final suma")
 				return result
-			
+				
 			}else if dominante == environment.STRING{
 			
 				gen.GenerateConcatString()
@@ -119,6 +120,7 @@ func (o Operation) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 				gen.AddExpression(newTemp, op1.Value, op2.Value, "-")
 				result = environment.NewValue(newTemp, true, dominante)
 				result.IntValue = op1.IntValue - op2.IntValue
+				gen.AddComment("Final resta")
 				return result
 			} else {
 				ast.SetError("ERROR: No es posible restar")
