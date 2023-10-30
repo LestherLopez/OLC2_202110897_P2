@@ -45,6 +45,6 @@ func (p Access) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 	result.Type = retSym.Tipo
 	result.Transfer = retSym.Transfer
 	result.IsTemp = retSym.Mutable
-	gen.AddComment("Final llamando a variable")
+
 	return result
 }

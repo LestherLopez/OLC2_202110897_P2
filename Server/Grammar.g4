@@ -184,7 +184,7 @@ forstmt returns [interfaces.Instruction for]
 
 
 guardstmt returns [interfaces.Instruction gua]
-: GUARD expr ELSE LLAVEIZQ block r=(CONTINUE|RETURN|BREAK) LLAVEDER {$gua = instructions.NewGuard($GUARD.line, $GUARD.pos, $expr.e, $block.blk, $r.text)}
+: GUARD expr ELSE LLAVEIZQ block LLAVEDER {$gua = instructions.NewGuard($GUARD.line, $GUARD.pos, $expr.e, $block.blk)}
 ; 
 
 transferstmt returns [interfaces.Instruction tran]
