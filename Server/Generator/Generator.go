@@ -18,6 +18,7 @@ type Generator struct {
 	PrintStringFlag bool
 	ConcatStringFlag bool
 	SaveTmp 		string
+	PrintNull 		bool
 }
 
 func NewGenerator() Generator {
@@ -29,6 +30,7 @@ func NewGenerator() Generator {
 		PrintStringFlag: true,
 		MainCode:      true,
 		ConcatStringFlag: true,
+		PrintNull: true,
 		SaveTmp:  "",
 	}
 	return generator
@@ -203,11 +205,11 @@ func (g *Generator) GenerateFinalCode() {
 	
 	g.FinalCode = append(g.FinalCode, "# include <stdio.h>"+"\n"+"float stack[10000];"+"\n"+"float heap[10000];"+"\n"+"float P;"+"\n"+"float H;"+"\n"+"float ")
 	//****************** add temporal declaration
-	fmt.Print("a3")
+	
 	tmpDec := fmt.Sprintf("%v", g.GetTemps()[0])
-	fmt.Print("a2")
+
 	g.TempList =  append(g.TempList[:0], g.TempList[0+1:]... )
-	fmt.Print("a1")
+
 	for _, s := range g.TempList {
 		tmpDec += ", "
 		tmpDec += fmt.Sprintf("%v", s)
@@ -304,5 +306,18 @@ func (g *Generator) GenerateConcatString() {
 		g.Natives=append(g.Natives,"\treturn;\n")
 		g.Natives=append(g.Natives,"}\n\n")
 		g.ConcatStringFlag = false
+	}
+}
+
+func (g *Generator) GeneratePrintNil() {
+	if g.PrintNull {
+		g.Natives=append(g.Natives,"void print_nil() {\n")
+		
+		g.Natives = append(g.Natives, "printf(\"%c\",110)\n;")
+		g.Natives = append(g.Natives, "printf(\"%c\",105)\n;")
+		g.Natives = append(g.Natives, "printf(\"%c\",108)\n;")
+		g.Natives=append(g.Natives,"\treturn;\n")
+		g.Natives=append(g.Natives,"}\n\n")
+		g.PrintNull = false
 	}
 }

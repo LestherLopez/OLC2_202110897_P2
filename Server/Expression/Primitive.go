@@ -59,6 +59,11 @@ func (p Primitive) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 		result = environment.NewValue("", false, environment.BOOLEAN)
 		result.TrueLabel = append(result.TrueLabel, trueLabel)
 		result.FalseLabel = append(result.FalseLabel, falseLabel)
+	}else if p.Tipo == environment.NULL{
+		gen.AddComment("Valor nil")
+		newTemp:=gen.NewTemp()
+		gen.AddAssign(newTemp, "-1")
+		result = environment.NewValue(newTemp,true, p.Tipo)
 	}
 	return result
 }

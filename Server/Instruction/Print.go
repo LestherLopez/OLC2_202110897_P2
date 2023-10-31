@@ -81,6 +81,9 @@ func (p Print) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Ge
 			
 			gen.AddBr()
 
+		}else if valueToPrint.Type == environment.NULL{
+			gen.GeneratePrintNil()
+			gen.AddCall("print_nil")
 		}
 	
 	}
