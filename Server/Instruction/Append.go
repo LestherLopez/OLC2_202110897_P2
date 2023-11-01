@@ -2,8 +2,11 @@ package instructions
 
 import (
 	environment "Server/Environment"
+	expressions "Server/Expression"
 	generator "Server/Generator"
 	interfaces "Server/Interfaces"
+	"fmt"
+	"strconv"
 )
 
 type Append struct {
@@ -11,6 +14,7 @@ type Append struct {
 	Col   int
 	id_var string
 	exp interfaces.Expression
+
 }
 //lin int, col int, id_var string, type_var environment.TipoExpresion, valor interfaces.Expression, constant bool
 func NewAppend(lin int, col int, id_var string, exp interfaces.Expression) Append {
@@ -18,6 +22,19 @@ func NewAppend(lin int, col int, id_var string, exp interfaces.Expression) Appen
 }
 
 func (p Append) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) interface{} {
+	gen.AddComment("Append instruccion")
+	//numero
+	numero := p.exp.(interfaces.Expression).Ejecutar(ast, env, gen)
+
+	access := expressions.NewAccessVector(p.Lin, p.Col, p.id_var)
+	valor := access.Ejecutar(ast, env, gen)
+	retSym := env.(environment.Environment).GetVariable(p.id_var)
+	fmt.Print(valor)
+	fmt.Print("\n")
+	fmt.Print(retSym)
+	retSym.ArrSize = retSym.ArrSize + 1
+	gen.AddExpression(valor.Value, valor.Value, strconv.Itoa(retSym.ArrSize), "+")
+	gen.AddSetStack("int("+valor.Value+")", numero.Value)
 	/*
 	var valor environment.Symbol
 	valor = p.exp.(interfaces.Expression).Ejecutar(ast, env)

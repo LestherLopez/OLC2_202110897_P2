@@ -408,6 +408,7 @@ type returns [environment.TipoExpresion t]
   | BOOLS       {$t = environment.BOOLEAN }  
   | CHARACTERS    {$t = environment.CHARACTER}  
   | ID { $t = environment.STRUCT  }
+
 ;
 listParams returns[[]interface{} l]
 : list=listParams COMA (AND_SIMPLE| ID DOUBLEPTS)? expr {

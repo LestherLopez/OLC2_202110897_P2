@@ -45,6 +45,7 @@ func (env Environment) KeepVariable(id string, tipo TipoExpresion, mutable bool,
 func (env Environment) SaveArrayVariable(id string, tipo TipoExpresion, arrSize int) Symbol {
 	if variable, ok := env.Variables[id]; ok {
 		fmt.Println("La variable "+id+" ya existe ", variable)
+		env.Variables[id] = Symbol{Lin: env.Variables[id].Lin, Col: env.Variables[id].Col, Tipo: env.Variables[id].Tipo, Posicion: env.Variables[id].Posicion, ArrSize: arrSize}
 		return env.Variables[id]
 	}
 	env.Variables[id] = Symbol{Lin: 0, Col: 0, Tipo: tipo, Posicion: env.Size["size"], ArrSize: arrSize}

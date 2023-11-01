@@ -254,25 +254,25 @@ public interface GrammarListener extends ParseTreeListener {
 	 */
 	void exitCountvecstmt(GrammarParser.CountvecstmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GrammarParser#accessvecstmt}.
+	 * Enter a parse tree produced by {@link GrammarParser#listArray}.
 	 * @param ctx the parse tree
 	 */
-	void enterAccessvecstmt(GrammarParser.AccessvecstmtContext ctx);
+	void enterListArray(GrammarParser.ListArrayContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GrammarParser#accessvecstmt}.
+	 * Exit a parse tree produced by {@link GrammarParser#listArray}.
 	 * @param ctx the parse tree
 	 */
-	void exitAccessvecstmt(GrammarParser.AccessvecstmtContext ctx);
+	void exitListArray(GrammarParser.ListArrayContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link GrammarParser#assignationvecstmt}.
+	 * Enter a parse tree produced by {@link GrammarParser#listAccessArray}.
 	 * @param ctx the parse tree
 	 */
-	void enterAssignationvecstmt(GrammarParser.AssignationvecstmtContext ctx);
+	void enterListAccessArray(GrammarParser.ListAccessArrayContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link GrammarParser#assignationvecstmt}.
+	 * Exit a parse tree produced by {@link GrammarParser#listAccessArray}.
 	 * @param ctx the parse tree
 	 */
-	void exitAssignationvecstmt(GrammarParser.AssignationvecstmtContext ctx);
+	void exitListAccessArray(GrammarParser.ListAccessArrayContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GrammarParser#declarematrixstmt}.
 	 * @param ctx the parse tree
