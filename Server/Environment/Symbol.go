@@ -11,4 +11,5 @@ type Symbol struct {
 	IsList   bool
 	Posicion int
 	Label    string
+	ArrSize  int
 }

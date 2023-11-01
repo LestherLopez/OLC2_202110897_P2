@@ -33,6 +33,7 @@ $blk = []interface{}{}
     }
 ;
 
+
 instruction returns [interfaces.Instruction inst]
 : printstmt { $inst = $printstmt.prnt}
 | declarestmt {$inst = $declarestmt.dec}
@@ -49,12 +50,13 @@ instruction returns [interfaces.Instruction inst]
 | appendstmt    {$inst = $appendstmt.app}
 | removelaststmt {$inst = $removelaststmt.removl}
 | removestmt {$inst = $removestmt.remov}
-| assignationvecstmt {$inst = $assignationvecstmt.assignvec}
+//| assignationvecstmt {$inst = $assignationvecstmt.assignvec}
 | declarefuncstmt {$inst = $declarefuncstmt.decfunc}
 | accessfuncinstruction {$inst = $accessfuncinstruction.accessfuncin}
 | declarestructstmt     {$inst = $declarestructstmt.decstruct }
 | assignationstructstmt {$inst = $assignationstructstmt.assignstruct}
 ;
+
 
 printstmt returns [interfaces.Instruction prnt]
 : PRINT PARIZQ listParams PARDER PTCOMA? { $prnt = instructions.NewPrint($PRINT.line, $PRINT.pos, $listParams.l)}
@@ -194,9 +196,10 @@ transferstmt returns [interfaces.Instruction tran]
 | BREAK PTCOMA? {$tran = instructions.NewBreak($BREAK.line, $BREAK.pos)}
 ;
 //-----------------VECTORES-----------------------------
+
 declarevectorstmt returns [interfaces.Instruction decvec]
-: VAR ID DOUBLEPTS CORCHETEIZQ type CORCHETEDER IG CORCHETEIZQ listParams CORCHETEDER PTCOMA? {$decvec = instructions.NewToDeclareVector($VAR.line, $VAR.pos, $ID.text, $type.t, $listParams.l, "")}
-| VAR ID DOUBLEPTS CORCHETEIZQ type CORCHETEDER IG CORCHETEIZQ CORCHETEDER PTCOMA? {$decvec = instructions.NewToDeclareVector($VAR.line, $VAR.pos, $ID.text, $type.t, nil, "")}
+: VAR ID DOUBLEPTS CORCHETEIZQ type CORCHETEDER IG expr PTCOMA? {$decvec = instructions.NewToDeclareVector($VAR.line, $VAR.pos, $ID.text, $type.t, $expr.e, "")}
+| VAR ID DOUBLEPTS CORCHETEIZQ type CORCHETEDER IG expr PTCOMA? {$decvec = instructions.NewToDeclareVector($VAR.line, $VAR.pos, $ID.text, $type.t, nil, "")}
 | VAR ID IG CORCHETEIZQ type CORCHETEDER PARIZQ PARDER PTCOMA?//vector struct
 | VAR F=ID DOUBLEPTS CORCHETEIZQ type CORCHETEDER IG S=ID PTCOMA? {$decvec = instructions.NewToDeclareVector($VAR.line, $VAR.pos, $F.text, $type.t, nil, $S.text)} //copia de vector
 ;
@@ -226,16 +229,32 @@ emptvecstmt returns [interfaces.Expression emptyvec]
 countvecstmt returns [interfaces.Expression count]
 : ID POINT COUNT {$count = expressions.NewCount($ID.line, $ID.pos, $ID.text)}
 ; 
- 
+ /* 
 accessvecstmt returns [interfaces.Expression accessvec]
 : ID CORCHETEIZQ expr CORCHETEDER {$accessvec = expressions.NewAccessVector($ID.line, $ID.pos, $ID.text, $expr.e)}
 
-;
-
+;*/
+/* 
 assignationvecstmt returns [interfaces.Instruction assignvec]
 : ID CORCHETEIZQ expprim=expr CORCHETEDER IG expsegundo=expr PTCOMA? {$assignvec = instructions.NewAssignationVector($ID.line, $ID.pos, $ID.text, $expprim.e, $expsegundo.e)}
 ;
+*/
+listArray returns[interfaces.Expression p]
+: list = listArray arr = listAccessArray { $p = expressions.NewArrayAccess($ID.line, $ID.pos, $list.p, $arr.l) }
+| ID { $p = expressions.NewAccessVector($ID.line, $ID.pos, $ID.text)}
+;
 
+listAccessArray returns[[]interface{} l]
+: list = listAccessArray CORCHETEIZQ expr CORCHETEDER {
+                                                var arr []interface{}
+                                                arr = append($list.l, $expr.e)
+                                                $l = arr
+                                            } 
+| CORCHETEIZQ expr CORCHETEDER    {
+                            $l = []interface{}{}
+                            $l = append($l, $expr.e)
+                        }
+;
 //-------------------------MATRICES--------------------------------
 declarematrixstmt returns [interfaces.Instruction decmatrix]
 : VAR ID PARIZQ DOUBLEPTS type PARDER IG PTCOMA?
@@ -270,7 +289,7 @@ listParamsFunc returns[[]interface{} lf]
 parameterfuncstmt returns[interfaces.Expression parameterfunc]
 
 : exte=(ID|GUION_BAJO) ID DOUBLEPTS type {$parameterfunc = expressions.NewParameters($exte.line, $exte.pos, $type.t, $exte.text,  $ID.text, 1)}
-| exte=(ID|GUION_BAJO) ID DOUBLEPTS INOUT? CORCHETEIZQ type CORCHETEDER {$parameterfunc = expressions.NewParameters($exte.line, $exte.pos, $type.t, $exte.text,  $ID.text,2);}
+| exte=(ID|GUION_BAJO) ID DOUBLEPTS INOUT? CORCHETEIZQ? type CORCHETEDER? {$parameterfunc = expressions.NewParameters($exte.line, $exte.pos, $type.t, $exte.text,  $ID.text,2);}
 | ID DOUBLEPTS type  {$parameterfunc = expressions.NewParameters($ID.line, $ID.pos, $type.t, "_",  $ID.text, 1)}
 ;
 //---------------------------------STRUCTS-------------------------
@@ -335,13 +354,15 @@ expr returns [interfaces.Expression e]
 | accessstmt {$e = $accessstmt.access}
 | emptvecstmt {$e = $emptvecstmt.emptyvec}
 | countvecstmt {$e = $countvecstmt.count}
-| accessvecstmt {$e = $accessvecstmt.accessvec}
+//| accessvecstmt {$e = $accessvecstmt.accessvec}
 | intfunctionstmt {$e = $intfunctionstmt.intfunc}
 | floatfunctionstmt {$e = $floatfunctionstmt.floatfunc}
 | stringfunctionstmt {$e = $stringfunctionstmt.stringfunc}
 | accessfuncstmt     {$e = $accessfuncstmt.funcexp}
 | ID (LLAVEIZQ|PARIZQ) listStructExp (LLAVEDER|PARDER) { $e = expressions.NewStructExp($ID.line, $ID.pos, $ID.text, $listStructExp.l ) }
 | accessstructstmt {$e = $accessstructstmt.accessstruct}
+| list=listArray { $e = $list.p}
+| CORCHETEIZQ listParams CORCHETEDER { $e = expressions.NewArray($CORCHETEIZQ.line, $CORCHETEDER.pos, $listParams.l) }
 ;
 
 accessstructstmt returns [interfaces.Expression accessstruct]

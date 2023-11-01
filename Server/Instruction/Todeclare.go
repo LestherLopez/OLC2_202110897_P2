@@ -34,7 +34,8 @@ func (p Todeclare) Ejecutar(ast *environment.AST, env interface{}, gen *generato
 	if !p.constant{
 		//variable con valor y con tipo
 		if p.type_var != environment.NULL && p.valor != nil{
-			if result.Type == p.type_var{
+			 if result.Type == p.type_var{
+
 				result.Mutable = true
 				newVar = env.(environment.Environment).KeepVariable(p.id_var, p.type_var, true, p.Lin, p.Col)
 			}else{

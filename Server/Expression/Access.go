@@ -37,9 +37,6 @@ func (p Access) Ejecutar(ast *environment.AST, env interface{}, gen *generator.G
 		result = environment.NewValue("", false, environment.BOOLEAN)
 		result.TrueLabel = append(result.TrueLabel, trueLabel)
 		result.FalseLabel = append(result.FalseLabel, falseLabel)
-	} else {
-		result = environment.NewValue(newTemp2, true, retSym.Tipo)
-		
 	}
 
 	result.Type = retSym.Tipo

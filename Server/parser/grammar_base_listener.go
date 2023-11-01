@@ -164,17 +164,17 @@ func (s *BaseGrammarListener) EnterCountvecstmt(ctx *CountvecstmtContext) {}
 // ExitCountvecstmt is called when production countvecstmt is exited.
 func (s *BaseGrammarListener) ExitCountvecstmt(ctx *CountvecstmtContext) {}
 
-// EnterAccessvecstmt is called when production accessvecstmt is entered.
-func (s *BaseGrammarListener) EnterAccessvecstmt(ctx *AccessvecstmtContext) {}
+// EnterListArray is called when production listArray is entered.
+func (s *BaseGrammarListener) EnterListArray(ctx *ListArrayContext) {}
 
-// ExitAccessvecstmt is called when production accessvecstmt is exited.
-func (s *BaseGrammarListener) ExitAccessvecstmt(ctx *AccessvecstmtContext) {}
+// ExitListArray is called when production listArray is exited.
+func (s *BaseGrammarListener) ExitListArray(ctx *ListArrayContext) {}
 
-// EnterAssignationvecstmt is called when production assignationvecstmt is entered.
-func (s *BaseGrammarListener) EnterAssignationvecstmt(ctx *AssignationvecstmtContext) {}
+// EnterListAccessArray is called when production listAccessArray is entered.
+func (s *BaseGrammarListener) EnterListAccessArray(ctx *ListAccessArrayContext) {}
 
-// ExitAssignationvecstmt is called when production assignationvecstmt is exited.
-func (s *BaseGrammarListener) ExitAssignationvecstmt(ctx *AssignationvecstmtContext) {}
+// ExitListAccessArray is called when production listAccessArray is exited.
+func (s *BaseGrammarListener) ExitListAccessArray(ctx *ListAccessArrayContext) {}
 
 // EnterDeclarematrixstmt is called when production declarematrixstmt is entered.
 func (s *BaseGrammarListener) EnterDeclarematrixstmt(ctx *DeclarematrixstmtContext) {}
