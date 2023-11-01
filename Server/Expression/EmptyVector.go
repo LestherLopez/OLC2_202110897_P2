@@ -3,6 +3,7 @@ package expressions
 import (
 	environment "Server/Environment"
 	generator "Server/Generator"
+	"strconv"
 )
 
 type EmptyVector struct {
@@ -17,6 +18,22 @@ func NewEmptyVector(lin int, col int, id string) EmptyVector {
 }
 
 func (p EmptyVector) Ejecutar(ast *environment.AST, env interface{}, gen *generator.Generator) environment.Value {
+	gen.AddComment("isEmpty expression")
+	//numero
+	
+		access := NewAccessVector(p.Lin, p.Col, p.id)
+		valor := access.Ejecutar(ast, env, gen)
+		trueL := gen.NewLabel()
+		falseL := gen.NewLabel()
+		gen.AddIf("0", strconv.Itoa(valor.ArrSize), "==", trueL)
+		gen.AddGoto(falseL)
+
+		result := environment.NewValue("", false, environment.BOOLEAN)
+		result.TrueLabel = append(result.TrueLabel, trueL)
+		result.FalseLabel = append(result.FalseLabel, falseL)
+		return result
+	
+	
 	/*
 	result := env.(environment.Environment).GetVector(p.id)
 	if(len(result.Valor)!=0){	//vector con elementos return false
@@ -27,5 +44,5 @@ func (p EmptyVector) Ejecutar(ast *environment.AST, env interface{}, gen *genera
 		return environment.Symbol{Lin: p.Lin, Col: p.Col, Tipo: environment.BOOLEAN, Valor: true}
 	}
 	*/
-	return environment.Value{}
+
 }
