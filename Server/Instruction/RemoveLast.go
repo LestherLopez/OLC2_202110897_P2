@@ -5,7 +5,6 @@ import (
 	expressions "Server/Expression"
 	generator "Server/Generator"
 
-	"fmt"
 	"strconv"
 )
 
@@ -28,9 +27,7 @@ func (p RemoveLast) Ejecutar(ast *environment.AST, env interface{}, gen *generat
 	access := expressions.NewAccessVector(p.Lin, p.Col, p.id_var)
 	valor := access.Ejecutar(ast, env, gen)
 	retSym := env.(environment.Environment).GetVariable(p.id_var)
-	fmt.Print(valor)
-	fmt.Print("\n")
-	fmt.Print(retSym)
+
 	gen.AddExpression(valor.Value, strconv.Itoa(retSym.ArrSize), valor.Value, "+")
 	gen.AddSetStack("int("+valor.Value+")", "0")
 	
